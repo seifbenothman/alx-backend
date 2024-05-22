@@ -1,15 +1,15 @@
 #!/usr/bin/python3
-""" fifo_cache """
+""" LIFO caching """
 BaseCaching = __import__('base_caching').BaseCaching
 
 
-class FIFOCache(BaseCaching):
-    """ FIFOCache """
+class LIFOCache(BaseCaching):
+    """ LIFOCache """
 
     def __init__(self):
-        """ FIFO cache """
+        """ LIFO cache """
         super().__init__()
-        self.queue = []
+        self.last_key = None
 
     def put(self, key, item):
         """ add an item in cache """
@@ -17,19 +17,19 @@ class FIFOCache(BaseCaching):
             return
 
         if len(self.cache_data) >= self.MAX_ITEMS:
-            discarded_key = self.queue.pop(0)
-            del self.cache_data[discarded_key]
-            print("DISCARD:", discarded_key)
+            if self.last_key is not None:
+                print("DISCARD:", self.last_key)
+                del self.cache_data[self.last_key]
 
         self.cache_data[key] = item
-        self.queue.append(key)
+        self.last_key = key
 
     def get(self, key):
         """ item by key """
         if key is None or key not in self.cache_data:
             return None
-        return self.cache_data[key]
+        return self.cache_data.get(key)
 
 
 if __name__ == "__main__":
-    FIFOCache = FIFOCache
+    LIFOCache = LIFOCache
